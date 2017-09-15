@@ -39,23 +39,19 @@ function s:prettierSave()
 			echoe line
 		endfor
 	else
-		" Make an edit so that the cursor position will be mainted if the
-		" prettification is undone
-		" See http://vim.wikia.com/wiki/Restore_the_cursor_position_after_undoing_text_change_made_by_a_script
-		normal! ix
-		normal! x
-
 		" Save the window state
 		let l:view = winsaveview()
 
-		" Delete all lines
-		%d
+		" Make an edit so that the cursor position will be maintained if the
+		" prettification is undone
+		" See http://vim.wikia.com/wiki/Restore_the_cursor_position_after_undoing_text_change_made_by_a_script
+		normal! ix | normal! x
 
-		" Set the first line to the first output line, then append the
-		" remaining output lines. This prevents the buffer from having an
-		" leading or trailing blank line that wasn't part of the output.
-		call setline(1, l:out[0])
-		call append(1, l:out[1:])
+		" Prepend the output lines to the start of the buffer, then delete
+		" everything after.
+		keepjumps silent
+			\ | call append(0, l:out)
+			\ | exec len(l:out) + 1 . ',$ delete'
 
 		" Restore the window state
 		call winrestview(l:view)
