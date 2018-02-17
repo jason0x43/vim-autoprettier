@@ -31,31 +31,7 @@ function s:prettierSave()
 		return
 	endif
 
-	silent let l:out = systemlist('prettier --stdin --stdin-filepath "' . expand('%') . '"', getline(1, '$'))
-
-	if v:shell_error
-		" prettier failed, so just echo the error
-		for line in l:out
-			echoe line
-		endfor
-	else
-		" Save the window state
-		let l:view = winsaveview()
-
-		" Make an edit so that the cursor position will be maintained if the
-		" prettification is undone
-		" See http://vim.wikia.com/wiki/Restore_the_cursor_position_after_undoing_text_change_made_by_a_script
-		normal! ix | normal! x
-
-		" Prepend the output lines to the start of the buffer, then delete
-		" everything after.
-		keepjumps silent
-			\ | call append(0, l:out)
-			\ | exec len(l:out) + 1 . ',$ delete'
-
-		" Restore the window state
-		call winrestview(l:view)
-	endif
+	Prettier
 endfunction
 
 " Autocommands to check for prettier and to process files
